@@ -2,8 +2,15 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django
 
 
-#bat file
+# virtual env activation bat file
 activate.bat
+Readme.md
+image.png
+
+
+# debug logger
+debug.log
+
 ### Django ###
 
 *.log
