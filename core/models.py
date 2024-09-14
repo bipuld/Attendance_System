@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
 # Custom UserManager
 class UserManager(BaseUserManager):
     def _create_user(self, email, first_name, last_name, password, mobile, **extra_fields):
@@ -66,3 +65,7 @@ class UserAccountManager(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+
+
+
+# user signup and login model 

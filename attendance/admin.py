@@ -60,12 +60,3 @@ class ClassAdmin(admin.ModelAdmin):
     actions = ['assign_random_students']  # Custom action
     def get_students(self, obj):
         return ", ".join([s.name for s in obj.students.all()])
-    
-    # def assign_random_students(self, request, queryset):
-    #     # This action can randomly assign students to selected classes
-    #     from random import sample
-    #     students = list(Student.objects.all())
-    #     for cls in queryset:
-    #         cls.students.set(sample(students, 5))  # Assign 5 random students to each class
-    #     self.message_user(request, "Random students assigned to selected classes.")
-    # assign_random_students.short_description = 'Assign random students to selected classes'

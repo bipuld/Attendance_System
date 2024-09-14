@@ -1,17 +1,17 @@
 from django.db import models
 
 # Create your models here.
+
 class Student(models.Model):
     student_id = models.CharField(max_length=50,unique=True)
     name=models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.id} {self.name}"
+        return f"{self.id}  {self.student_id} {self.name}"
     
 class Class(models.Model):
     name=models.CharField(max_length=255)
-    students = models.ManyToManyField(Student,related_name='classes')
-
+    students = models.ManyToManyField(Student,related_name='classes',blank=True)
     def __str__(self):
         return f"{self.name}"
 
@@ -26,5 +26,5 @@ class Attendance(models.Model):
 
 
     def __str__(self):
-        return f"{self.student} - {self.date} - {self.status}"
+        return f"{self.student} - {self.date} - {{self.get_status_display()}}"
     

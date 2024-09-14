@@ -1,6 +1,7 @@
 import os 
 from pathlib import Path
 from datetime import timedelta
+from django.contrib.messages import constants as message_constants
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,8 +34,9 @@ INSTALLED_APPS = [
 ]
 
 EXTERNAL_APPS = [
-    'core',
-    'attendance'
+    'core', # the core app is created to handle the custom user manager
+    'attendance',
+    'account', # this account app is used to managea and handle the user account 
 ]
 INSTALLED_APPS.extend(EXTERNAL_APPS)
 
@@ -56,7 +58,7 @@ AUTH_USER_MODEL = 'core.UserAccountManager'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -108,6 +110,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
+     'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
+
+
     # Paginator Setting for REST API
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 2, 
@@ -156,6 +165,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Some messages tags
+MESSAGE_TAGS = {
+    message_constants.DEBUG: 'alert-info',
+    message_constants.INFO: 'alert-info',
+    message_constants.SUCCESS: 'alert-success',
+    message_constants.WARNING: 'alert-warning',
+    message_constants.ERROR: 'alert-danger',
+}
 
 # This logging setting will create a debug.log file in the root directory of the project.
 
