@@ -149,20 +149,18 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production, when you run 'collectstatic'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Create a 'static' folder in your project directory
+]
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  
 
 # media file settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-
-
 # Default primary key field type
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Message tags mapping to Bootstrap classes
@@ -210,3 +208,6 @@ LOGGING = {
     },
 }
 
+
+LOGIN_URL = 'auth/login/'  # The URL to which the user will be redirected if you are not authenticated
+LOGIN_REDIRECT_URL = 'home'  # The URL to which the user will be redirected after successful login

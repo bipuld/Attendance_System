@@ -78,6 +78,7 @@ class LoginApiView(APIView):
             # Log the user in (Django session management for web login)
             django_login(request, user)
             
+            
             return JsonResponse(messages, status=status.HTTP_200_OK)
         else:
           
@@ -93,8 +94,10 @@ class LogoutApiView(APIView):
     """
     permission_classes = [IsAuthenticated]
     def post(self, request):
+       
         user = request.user
         try:
+            print("request skodgd",request)
             token = RefreshToken.for_user(user)
             token.blacklist()
             messages = {

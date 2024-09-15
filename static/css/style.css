@@ -1,6 +1,26 @@
+
+  .hero {
+    background-color: #0d6efd;
+    color: #fff;
+    padding: 100px 0;
+    text-align: center;
+    background-image: linear-gradient(135deg, #007bff, #0056b3);
+  }
+  .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+  }
+  .hero p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
 body {
     background: #222D32;
     font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+
 }
 
 .login-box {
