@@ -6,129 +6,165 @@ Login
 
 {% block css %}
 <style>
-body {
-    background: #f4f7f6;
-    font-family: 'Roboto', sans-serif;
-}
-
-.login-box {
-    margin-top: 75px;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    animation: fadeIn 1s ease-out;
-}
-
-.login-key {
-    font-size: 80px;
-    color: #0DB8DE;
-    animation: bounce 1.5s infinite;
-}
-
-.login-title {
-    margin-top: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 25px;
-}
-
-.login-form {
-    text-align: left;
-}
-
-input[type=email],
-input[type=password] {
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 20px;
-    font-size: 16px;
-}
-
-input[type=email]:focus,
-input[type=password]:focus {
-    border-color: #0DB8DE;
-    box-shadow: 0 0 0 0.2rem rgba(13, 184, 222, 0.25);
-    outline: none;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-control-label {
-    font-size: 14px;
-    color: #495057;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.btn-outline-primary {
-    border-color: #0DB8DE;
-    color: #0DB8DE;
-    border-radius: 4px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    padding: 10px 20px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.btn-outline-primary:hover {
-    background-color: #0DB8DE;
-    color: #ffffff;
-}
-
-.login-btm {
-    margin-top: 20px;
-}
-
-.login-text {
-    color: #6c757d;
-}
-
-.login-button {
-    text-align: right;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    body {
+        background: #f4f7f6;
+        font-family: 'Roboto', sans-serif;
     }
-    to {
+    
+    .login-box {
+        margin-top: 75px;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        animation: fadeIn 1s ease-out;
+    }
+    
+    .login-key {
+        font-size: 80px;
+        color: #0DB8DE;
+        animation: bounce 1.5s infinite;
+    }
+    
+    .login-title {
+        margin-top: 15px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 25px;
+    }
+    
+    .login-form {
+        text-align: left;
+    }
+    
+    input[type=email],
+    input[type=password] {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+    
+    input[type=email]:focus,
+    input[type=password]:focus {
+        border-color: #0DB8DE;
+        box-shadow: 0 0 0 0.2rem rgba(13, 184, 222, 0.25);
+        outline: none;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-control-label {
+        font-size: 14px;
+        color: #495057;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .btn-outline-primary {
+        border-color: #0DB8DE;
+        color: #0DB8DE;
+        border-radius: 4px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        padding: 10px 20px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #0DB8DE;
+        color: #ffffff;
+    }
+    
+    .login-btm {
+        margin-top: 20px;
+    }
+    
+    .login-text {
+        color: #6c757d;
+    }
+    
+    .login-button {
+        text-align: right;
+    }
+    
+    /* Popup Styles */
+    .popup-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        color: white;
+        background-color: #333;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .popup-message.show {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
+    
+    .popup-message.success {
+        background-color: #28a745; /* Green for success */
     }
-    50% {
-        transform: translateY(-10px);
+    
+    .popup-message.error {
+        background-color: #dc3545; /* Red for error */
     }
-}
-</style>
+    
+    .popup-message.warning {
+        background-color: #ffc107; /* Yellow for warning */
+    }
+    
+    .popup-message.fade-out {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    /* Animation for Login Box */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    </style>
+    
 {% endblock css %}
 
 {% block body %}
 
 <div class="container">
 
-    {% if messages %}
-    <div class="alert-container">
-        {% for message in messages %}
-            <div class="">
-                {{ message }}
-            </div>
-        {% endfor %}
+    <div id="message-container" class="login-text" style="color: red; font-weight: bold;">
+       
     </div>
-    {% endif %}
+    
+    
     <div class="row justify-content-center">
         <div class="col-lg-4 col-md-6">
             <div class="login-box">
@@ -152,9 +188,7 @@ input[type=password]:focus {
                         </div>
 
                         <div class="login-btm">
-                            <div id="message-container" class="login-text">
-                                <!-- Error Message -->
-                            </div>
+                         
                             <div class="login-button">
                                 <button type="submit" class="btn btn-outline-primary">LOGIN</button>
                             </div>
@@ -167,6 +201,79 @@ input[type=password]:focus {
 </div>
 
 {% block js %}
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault(); 
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+    
+        fetch('/auth/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ email: email, password: password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('responseData', data);
+            if (data.responseCode === '400') {
+                showPopup('Error: ' + data.errors, 'error');
+            } else if (data.responseCode === '200') {
+                showPopup('Login successful!', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500); // Delay for smooth UX before reloading
+            } else {
+                showPopup('An unexpected error occurred.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showPopup('An unexpected error occurred.', 'error');
+        });
+    });
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Popup function
+    function showPopup(message, type) {
+        const popup = document.createElement('div');
+        popup.className = `popup-message ${type}`;
+        popup.innerText = message;
+        document.body.appendChild(popup);
+        
 
-{% endblock %}
+        setTimeout(() => {
+            popup.classList.add('show');
+        }, 100);
+    
+        // Fade out and remove after 3 seconds
+        setTimeout(() => {
+            popup.classList.remove('show');
+            popup.classList.add('fade-out');
+            setTimeout(() => {
+                popup.remove();
+            }, 300); // Wait for fade-out animation
+        }, 3000);
+    }
+    </script>
+    
+{% endblock js %}
+
 {% endblock body %}

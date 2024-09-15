@@ -36,12 +36,12 @@ class LoginApiView(APIView):
         Returns:
         - JsonResponse: JSON response with user data (username , refresh_token,access_token ) or error message.
         """
-        print("request.data",request.data)
+        # print("request.data",request.data)
         try:
             email= request.data['email'].lower()
             password = request.data['password']
         except KeyError as e:
-            messages.error(request, 'Missing email or password in request data.')
+            
             messages = {
                 global_msg.RESPONSE_CODE_KEY: global_msg.UNSUCCESS_RESPONSE_CODE,
                 global_msg.ERROR_KEY: 'Missing email or password in request data.',
@@ -58,8 +58,7 @@ class LoginApiView(APIView):
                 if not user_info_details:
                     raise UserInfo.DoesNotExist  # Raise an error if UserInfo does not exist
             except UserInfo.DoesNotExist:
-                # If UserInfo is not found, return an error response
-                messages.error(request, 'User information not found.')
+              
                 messages = {
                     global_msg.RESPONSE_CODE_KEY: global_msg.UNSUCCESS_RESPONSE_CODE,
                     global_msg.ERROR_KEY: 'User information not found.',
@@ -68,17 +67,17 @@ class LoginApiView(APIView):
 
             # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
-            messages.success(request, 'User logged in successfully.')
+           
             messages = {
                 "email": user.email,
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
+                global_msg.RESPONSE_CODE_KEY: global_msg.SUCCESS_RESPONSE_CODE,
             }
 
             # Log the user in (Django session management for web login)
             django_login(request, user)
             
-            # Return success response with tokens
             return JsonResponse(messages, status=status.HTTP_200_OK)
         else:
           

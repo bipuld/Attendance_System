@@ -165,7 +165,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Some messages tags
+# Message tags mapping to Bootstrap classes
 MESSAGE_TAGS = {
     message_constants.DEBUG: 'alert-info',
     message_constants.INFO: 'alert-info',
@@ -173,6 +173,9 @@ MESSAGE_TAGS = {
     message_constants.WARNING: 'alert-warning',
     message_constants.ERROR: 'alert-danger',
 }
+
+# Default message storage
+MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
 # This logging setting will create a debug.log file in the root directory of the project.
 
