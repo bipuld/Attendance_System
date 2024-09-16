@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Left side: Add Attendance Form -->
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Add Attendance for {{ class_instance.name }}</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" id="attendanceForm">
+            {% csrf_token %}
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Student</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTable">
+                <!-- Empty form fields for adding attendance -->
+                <tr>
+                  <td>
+                    <select name="form-0-student" class="form-control">
+                      {% for student in class_instance.students.all %}
+                      <option value="{{ student.id }}">{{ student.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td><input type="date" name="form-0-date" class="form-control"></td>
+                  <td>
+                    <select name="form-0-status" class="form-control">
+                      <option value="present">Present</option>
+                      <option value="absent">Absent</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                      <i class="fas fa-trash-alt"></i> Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="text-center mb-3">
+              <button type="button" class="btn btn-success btn-sm" id="addAttendanceBtn">
+                <i class="fas fa-plus-circle"></i> Add Another
+              </button>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-check-circle"></i> Submit Attendance
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side: List of Attendance Records -->
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h4 class="mb-0">Attendance Records</h4>
+        </div>
+        <div class="card-body">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for attendance in class_instance.attendance_set.all %}
+              <tr>
+                <td>{{ attendance.student.name }}</td>
+                <td>{{ attendance.date }}</td>
+                <td>
+                  <span class="badge badge-{% if attendance.status == 'present' %}success{% else %}danger{% endif %}">
+                    {{ attendance.get_status_display }}
+                  </span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3" class="text-center">No attendance records available.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .badge {
+    font-size: 0.9em;
+  }
+  .btn-lg {
+    padding: 15px 30px;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+</style>
+
+<script>
+  document.getElementById('addAttendanceBtn').addEventListener('click', function() {
+    var table = document.getElementById('attendanceTable');
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    
+    row.innerHTML = `
+      <td>
+        <select name="form-${rowCount}-student" class="form-control">
+          {% for student in class_instance.students.all %}
+          <option value="{{ student.id }}">{{ student.name }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td><input type="date" name="form-${rowCount}-date" class="form-control"></td>
+      <td>
+        <select name="form-${rowCount}-status" class="form-control">
+          <option value="present">Present</option>
+          <option value="absent">Absent</option>
+        </select>
+      </td>
+      <td>
+        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+          <i class="fas fa-trash-alt"></i> Remove
+        </button>
+      </td>
+    `;
+  });
+
+  function removeRow(button) {
+    var row = button.parentElement.parentElement;
+    row.parentElement.removeChild(row);
+  }
+</script>
+{% endblock content %}

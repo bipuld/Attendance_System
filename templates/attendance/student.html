@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  Create Student
+{% endblock title %}
+
+{% block css %}
+<style>
+  .custom-container {
+    max-width: 1200px; /* Increased width for a better layout */
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .card {
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+  .form-control {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+  }
+  .form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+  }
+  .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    transition: background-color 0.3s ease;
+  }
+  .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+  .student-list {
+    margin-top: 20px;
+  }
+  .card-body {
+    position: relative;
+  }
+  .list-group-item .icon {
+    float: right;
+    margin-left: 10px;
+  }
+  .list-group-item .icon i {
+    cursor: pointer;
+  }
+
+
+  .alert {
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: cornflowerblue;
+    position: relative;
+    animation: fadeIn 0.5s ease-out;
+  }
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+  .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+  .alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+  }
+  .alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+  }
+  .alert-dismissible .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: inherit;
+  }
+  .alert-dismissible .close span {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+{% endblock css %}
+
+{% block content %}
+{% if messages %}
+<div class="custom-container">
+  <div class="row">
+    <div class="col-12 mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+<div class="custom-container">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Create New Student</h2>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group mb-3">
+              <label for="student_id" class="form-label">Student ID</label>
+              {{ form.student_id }}
+              {% if form.student_id.errors %}
+                <div class="text-danger">
+                  {{ form.student_id.errors }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="form-group mb-3">
+              <label for="name" class="form-label">Student Name</label>
+              {{ form.name }}
+              {% if form.name.errors %}
+                <div class="text-danger">
+                  {{ form.name.errors }}
+                </div>
+              {% endif %}
+            </div>
+            <button type="submit" class="btn btn-success mt-3">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Student list -->
+    <div class="col-md-6">
+      <div class="card shadow student-list">
+        <div class="card-header bg-secondary text-white">
+          <h3 class="mb-0">Student List</h3>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for student in student_list %}
+              <li class="list-group-item">
+                {{ student.student_id }} - {{ student.name }}
+                <span class="icon">
+                  <a href="{% url 'edit_student' student.id %}" class="text-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                  <a href="{% url 'delete_student' student.id %}" class="text-danger" title="Delete" onclick="return confirmDeletion();"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {% empty %}
+              <li class="list-group-item">No students available.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+
+<script>
+  function confirmDeletion() {
+    return confirm('Are you sure you want to delete this student?');
+  }
+</script>
+{% endblock %}
