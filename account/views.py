@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate ,login as django_login
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from django.contrib.auth import logout
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -11,7 +12,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
-
 
 from .models import UserInfo
 from .serializers import UserInfoSerializer
@@ -94,10 +94,8 @@ class LogoutApiView(APIView):
     """
     permission_classes = [IsAuthenticated]
     def post(self, request):
-       
         user = request.user
         try:
-            print("request skodgd",request)
             token = RefreshToken.for_user(user)
             token.blacklist()
             messages = {
@@ -110,6 +108,7 @@ class LogoutApiView(APIView):
                 global_msg.ERROR_KEY: str(e)
             }
             return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+        logout(request)
         messages = {
             global_msg.RESPONSE_CODE_KEY: global_msg.SUCCESS_RESPONSE_CODE,
             global_msg.RESPONSE_MESSAGE_KEY: "User logged out successfully",

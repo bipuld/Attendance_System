@@ -38,7 +38,7 @@
  
 
           <li class="nav-item">
-            <form method="post" action="{% url 'logout' %}" id="logout-form">
+            <form method="post" action="#" id="logout-form">
               {% csrf_token %}
               <button type="submit" class="nav-link btn btn-link" style="color: white; text-decoration: none;">
                 <i class="fas fa-sign-out-alt"></i> Logout
@@ -75,18 +75,16 @@
   <!-- Bootstrap 5 JS (via CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
   <script>
     document.getElementById('logout-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      console.log('Logging out...', event);
-      localStorage.setItem('access_token', response.access);
-
-  
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        console.error('No token found!');
-        return;
+      event.preventDefault(); // Prevent default form submission behavior
+      
+      const access_token = localStorage.getItem('access_token');
+      
+      // Check if access_token exists before proceeding
+      if (!access_token) {
+        console.error('No access token found! Please log in first.');
+        return; // Exit the function if no token is found
       }
       
       // Send POST request to the logout API
@@ -94,26 +92,46 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,  // Include the token in the Authorization header
-          'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if needed for security
+          'Authorization': 'Bearer ' + access_token,  // Include the token in the Authorization header
+          'X-CSRFToken': getCookie('csrftoken')  // Retrieve CSRF token dynamically
         }
       })
       .then(response => {
         if (response.ok) {
-          console.log('Logout successful');
+          console.log('Logged out successfully!');
           // Clear the token from localStorage after successful logout
           localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+         
+         
           // Redirect to login page or home
           window.location.href = '{% url "login" %}';
         } else {
           console.error('Logout failed with status:', response.status);
-          return response.json().then(data => console.error('Response data:', data));
+          return response.json().then(data => {
+            console.error('Response data:', data);
+          });
         }
       })
       .catch(error => console.error('Error:', error));
     });
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
   </script>
   
+
 
     
   {% block js  %}

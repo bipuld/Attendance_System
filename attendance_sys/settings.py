@@ -209,5 +209,5 @@ LOGGING = {
 }
 
 
-LOGIN_URL = 'auth/login/'  # The URL to which the user will be redirected if you are not authenticated
-LOGIN_REDIRECT_URL = 'home'  # The URL to which the user will be redirected after successful login
+LOGIN_URL = 'auth/login/' 
+LOGIN_REDIRECT_URL = 'home' 
