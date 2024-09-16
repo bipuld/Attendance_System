@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.shortcuts import redirect
 from django.contrib.auth import authenticate ,login as django_login
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -29,6 +30,8 @@ class LoginApiView(APIView):
         """
         Render the login template.
         """
+        if request.user.is_authenticated:
+            return redirect('home') 
         return render(request, 'account/login.html') 
 
     def post(self, request):
