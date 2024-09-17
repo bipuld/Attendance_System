@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+
+{% block title %}
+Submit Attendance
+   
+{% endblock title %}
 {% block content %}
 <div class="container mt-5">
   <div class="row">
@@ -27,16 +32,17 @@
                 <tr>
                   <td>
                     <select name="form-0-student" class="form-control">
-                      {% for student in class_instance.students.all %}
+                      {% for student in students %}
                       <option value="{{ student.id }}">{{ student.name }}</option>
                       {% endfor %}
                     </select>
                   </td>
-                  <td><input type="date" name="form-0-date" class="form-control"></td>
+                  <td><input type="date" name="dates" class="form-control"></td>
                   <td>
                     <select name="form-0-status" class="form-control">
-                      <option value="present">Present</option>
-                      <option value="absent">Absent</option>
+                      {% for value, label in status_choices %}
+                      <option value="{{ value }}">{{ label }}</option>
+                      {% endfor %}
                     </select>
                   </td>
                   <td>
@@ -71,6 +77,22 @@
           <h4 class="mb-0">Attendance Records</h4>
         </div>
         <div class="card-body">
+          <form method="get" class="mb-4">
+            <div class="form-row">
+              <div class="col-md-4">
+                <input type="date" name="start_date" class="form-control" placeholder="Start Date">
+              </div>
+              <div class="col-md-4">
+                <input type="date" name="end_date" class="form-control" placeholder="End Date">
+              </div>
+              <div class="col-md-4">
+                <button type="submit" class="btn btn-info btn-block">
+                  <i class="fas fa-filter"></i> Filter
+                </button>
+              </div>
+            </div>
+          </form>
+
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
@@ -80,7 +102,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for attendance in class_instance.attendance_set.all %}
+              {% for attendance in attendance_records %}
               <tr>
                 <td>{{ attendance.student.name }}</td>
                 <td>{{ attendance.date }}</td>
@@ -124,16 +146,17 @@
     row.innerHTML = `
       <td>
         <select name="form-${rowCount}-student" class="form-control">
-          {% for student in class_instance.students.all %}
+          {% for student in students %}
           <option value="{{ student.id }}">{{ student.name }}</option>
           {% endfor %}
         </select>
       </td>
-      <td><input type="date" name="form-${rowCount}-date" class="form-control"></td>
+      <td><input type="date" name="dates" class="form-control"></td>
       <td>
         <select name="form-${rowCount}-status" class="form-control">
-          <option value="present">Present</option>
-          <option value="absent">Absent</option>
+          {% for value, label in status_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
         </select>
       </td>
       <td>

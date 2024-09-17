@@ -29,3 +29,6 @@ class Attendance(models.Model):
     def __str__(self):
         return f"{self.student} - {self.date} - {{self.get_status_display()}}"
     
+
+    class Meta:
+        unique_together = ('student', 'class_instance', 'date')  # Ensure a student can have only one attendance record per date

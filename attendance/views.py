@@ -15,9 +15,9 @@ from .models import *
 def home(request):
     return render(request, 'attendance/home.html')
 
-@login_required
-def attendance_submission_class(request):
-    return render(request, 'attendance/att_entry.html')
+# @login_required
+# def attendance_submission_class(request):
+#     return render(request, 'attendance/att_entry.html')
 @method_decorator(login_required, name='dispatch')
 class StudentView(CreateView):
     model = Student
@@ -90,35 +90,91 @@ def class_edit(request, pk):
     
     return render(request, 'attendance/class_edit.html', {'form': form, 'class': class_instance})
 
+# class selection view
 @login_required
-def attendance_submission(request, class_id):
-    class_instance = get_object_or_404(Class, id=class_id)
+def class_selection(request):
+    class_list=Class.objects.all()
+    if request.method == 'POST':
+        class_id = request.POST.get('class_id')
+        return redirect('attendance_submission', class_id=class_id)
+    context = {
+        'list':class_list
+        }
+    return render(request, 'attendance/class_select.html', context)
 
-    # Define the formset for Attendance with extra=1 to ensure there's one empty form on load
-    AttendanceFormSet = inlineformset_factory(
-        Class, Attendance, 
-        form=AttendanceForm, 
-        extra=1,  # Show one empty form by default
-        can_delete=True
-    )
+
+
+def class_attendance(request, class_id):
+    class_instance = get_object_or_404(Class, id=class_id)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date and end_date:
+        try:
+            attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date])
+        except ValueError:
+            attendance_records = class_instance.attendance_set.none()  
+    else:
+        attendance_records = class_instance.attendance_set.all()
 
     if request.method == 'POST':
-       
-        formset = AttendanceFormSet(request.POST, instance=class_instance, form_kwargs={'class_instance': class_instance})
-        
-        if formset.is_valid():
-            # Save valid data
-            print(formset)
-            formset.save()
-            messages.success(request, 'Attendance submitted successfully.')
-            return redirect('attendance_submission', class_id=class_instance.id)
+        student_ids = request.POST.getlist('form-0-student')
+        dates = request.POST.getlist('dates')
+        statuses = request.POST.getlist('form-0-status')
+
+        if len(student_ids) == len(dates) == len(statuses):
+            for student_id, date, status in zip(student_ids, dates, statuses):
+                try:
+                    student_instance = Student.objects.get(pk=student_id)
+                    if date:  
+                        Attendance.objects.update_or_create(
+                            student=student_instance,
+                            class_instance=class_instance,
+                            date=date,
+                            defaults={'status': status}
+                        )
+                    else:
+                        print(f"Date is missing for student ID {student_id}.")
+                except Student.DoesNotExist:
+                    print(f"Student with ID {student_id} does not exist.")
+            return redirect('home')
         else:
-            messages.error(request, 'An error occurred. Please try again.')
-    else:
-        formset = AttendanceFormSet(instance=class_instance, form_kwargs={'class_instance': class_instance})
+            print("Mismatch in the number of student IDs, dates, and statuses.")
 
     context = {
         'class_instance': class_instance,
-        'formset': formset
+        'students': class_instance.students.all(),
+        'status_choices': Attendance.status_choices,
+        'attendance_records': attendance_records
     }
-    return render(request, 'attendance/att_entry.html', context)
+    
+    return render(request, 'attendance/attendance_submit.html', context)
+
+# @login_required
+# def class_attendance(request, class_id):
+#     class_instance = get_object_or_404(Class, id=class_id)
+
+#     # if request.method == 'POST':
+#     #     formset = AttendanceFormSet(request.POST, instance=class_instance, form_kwargs={'class_instance': class_instance})
+#     #     if formset.is_valid():
+#     #         formset.save()
+#     #         return redirect('home')
+#     #     else:
+#     #         print(formset.errors)
+#     # else:
+#     #     formset = AttendanceFormSet(instance=class_instance, form_kwargs={'class_instance': class_instance})
+
+#     # context = {
+#     #     'formset': formset,
+#     #     'class_instance': class_instance
+#     # }
+
+#     class_instance = get_object_or_404(Class, id=class_id)
+#     choice_status=Attendance.status_choices
+    
+#     context={
+#         'student_att':class_instance.students.all(),
+#         'class_instance':class_instance,
+#         'status_choices':choice_status
+#     }
+    
+#     return render(request, 'attendance/attendance_submit.html', context)

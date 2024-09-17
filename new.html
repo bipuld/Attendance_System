@@ -1,20 +1,79 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}
-Login
-{% endblock title %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Manage Attendance for {{ class_instance.name }}</h1>
 
-{% block css %}
+    <div class="row">
+        <!-- Left side: Attendance Form -->
+        <div class="col-md-7">
+            <h2 class="h4">Add or Update Attendance for Students</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ formset.management_form }}  <!-- Ensure this is included and correctly placed -->
+            
+                <table class="table table-bordered" id="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr>
+                            <td>{{ form.student }}</td>
+                            <td>{{ form.date }}</td>
+                            <td>{{ form.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+                <button type="button" class="btn btn-secondary" onclick="addRow()">Add Row</button>
+                <button type="submit" class="btn btn-primary">Submit Attendance</button>
+            </form>
+            
+        </div>
 
-{% endblock css %}
+        <!-- Right side: Existing Attendance -->
+        <div class="col-md-5">
+            <h2 class="h4">Existing Attendance Records</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attendance in class_instance.attendance_set.all %}
+                        <tr>
+                            <td>{{ attendance.student.name }} {{ attendance.student.id }}</td>
+                            <td>{{ attendance.date }}</td>
+                            <td>{{ attendance.get_status_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-{% block body %}
+<script>
+function addRow() {
+    const table = document.getElementById('attendance-table').getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow();
 
+    const studentCell = newRow.insertCell(0);
+    const dateCell = newRow.insertCell(1);
+    const statusCell = newRow.insertCell(2);
 
-
-{% block js %}
-
-    
-{% endblock js %}
-
-{% endblock body %}
+    studentCell.innerHTML = '<input type="text" name="student" class="form-control">';
+    dateCell.innerHTML = '<input type="date" name="date" class="form-control">';
+    statusCell.innerHTML = '<select name="status" class="form-control"><option value="present">Present</option><option value="absent">Absent</option></select>';
+}
+</script>
+{% endblock %}

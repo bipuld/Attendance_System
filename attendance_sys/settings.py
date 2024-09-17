@@ -37,6 +37,8 @@ EXTERNAL_APPS = [
     'core', # the core app is created to handle the custom user manager
     'attendance',
     'account', # this account app is used to managea and handle the user account 
+    'widget_tweaks',  # Ensure widget_tweaks is listed here
+
 ]
 INSTALLED_APPS.extend(EXTERNAL_APPS)
 

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Select Class
+{% endblock title %}
+{% block css %}
+<style>
+  
+    
+</style>
+{% endblock  %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Select a Class</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'class_selection' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="classSelect">Choose a Class</label>
+                            <select id="classSelect" name="class_id" class="form-control">
+                                <option value="">Select a class</option>
+                                {% for  class in list %}
+                                    <option value="{{ class.id }}">{{ class.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+
+                        <small class="form-text text-muted">Please select a class from the dropdown.</small>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-success btn-block" onmouseover="this.classList.add('hover-effect')" onmouseout="this.classList.remove('hover-effect')">
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

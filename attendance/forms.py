@@ -3,51 +3,49 @@ from .models import Student, Attendance, Class
 from django.forms import inlineformset_factory
 
 
+from django import forms
+from .models import Attendance, Class
+
+
+
 class AttendanceForm(forms.ModelForm):
     """
-    A ModelForm for the Attendance model. This form is used to create and update 
+    A ModelForm for the Attendance model. This form is used to create and update
     attendance records for students.
     """
     def __init__(self, *args, **kwargs):
-        # Capture the class_instance passed from the view
         class_instance = kwargs.pop('class_instance', None)
         super().__init__(*args, **kwargs)
-        
-        # Filter the 'student' field by students in the given class_instance
         if class_instance:
             self.fields['student'].queryset = class_instance.students.all()
 
     class Meta:
         model = Attendance
-        fields = ['student', 'date', 'status']
+        fields = ['id','student', 'date', 'status']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'status': forms.RadioSelect
+            'status': forms.RadioSelect,
         }
 
-class BulkAttendanceForm(forms.Form):
+    def clean(self):
+        cleaned_data = super().clean()
+        student = cleaned_data.get('student')
+        date = cleaned_data.get('date')
+        class_instance = self.instance.class_instance
 
-    """
-    A basic form for bulk attendance entry. This form allows users to specify
-    a date range and the attendance status for bulk updates.
-    """
-    start_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'})
-    )
-    end_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'})
-    )
-    status = forms.ChoiceField(
-        choices=[('present', 'Present'), ('absent', 'Absent')]
-    )
+        if student and date and class_instance:
+            if Attendance.objects.filter(student=student, date=date, class_instance=class_instance).exists():
+                raise forms.ValidationError(f"Attendance for {student} on {date} already exists.")
+        return cleaned_data
 
-# This Formset that allows you to manage multiple Attendance records related to a single Class instance. 
 AttendanceFormSet = inlineformset_factory(
-    Class, Attendance,
-    form=AttendanceForm,  # Form used to create/update Attendance records
-    extra=1,  # Number of extra forms to display initially (for adding new records)
-    can_delete=True  # Allows deletion of records from the formset
+    Class,
+    Attendance,
+    form=AttendanceForm,
+    extra=1,
+    can_delete=True
 )
+
 class StudentCreationForm(forms.ModelForm):
     """
     A ModelForm for the Student model. This form is used to create and update student records.
