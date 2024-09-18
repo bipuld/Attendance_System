@@ -23,7 +23,7 @@
                     <h4 class="mb-0">Select a Class</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{% url 'class_selection' %}">
+                    <form method="POST" action="{% url 'report_class' %}">
                         {% csrf_token %}
                         <div class="form-group">
                             <input type="hidden" name="action" value="attendance">

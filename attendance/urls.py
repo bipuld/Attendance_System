@@ -2,8 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path('attendance/', views.attendance_submission, name='attendance_submission'),
-    # path('report/', views.AttendanceReportView.as_view(), name='attendance_report'),
     path('', views.home, name='home'),
     path('student/', views.StudentView.as_view(), name='student'),
     path('student/delete/<int:pk>/', views.StudentDeleteView.as_view(), name='delete_student'),
@@ -12,9 +10,12 @@ urlpatterns = [
     path('class/delete/<int:pk>/', views.class_delete, name='cls_delete'),
     path('class/edit/<int:pk>/', views.class_edit, name='cls_edit'),
     
-    path('submit/<int:class_id>/', views.class_attendance, name='attendance_submission'),
-    path('attendance/delete/<int:pk>/', views.attendance_delete, name='delete_attendance'),
     path('class-selection/', views.class_selection, name='class_selection'),
+    path('attendance/submit/<int:class_id>/', views.class_attendance, name='attendance_submission'),
+    path('attendance/delete/<int:pk>/', views.attendance_delete, name='delete_attendance'),
+
+    path('report_class/', views.report_class, name='report_class'),
+    path('report/generate/<int:pk>',views.ReportGenerate.as_view() , name='report'),
 
 
     ]

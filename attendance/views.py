@@ -1,3 +1,5 @@
+from django.forms import BaseModelForm
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -7,6 +9,7 @@ from django.views import View
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
+from attendance.serializers.attendance_serializer import AttendanceSerializer
 from .forms import *
 from .models import *
 
@@ -27,8 +30,13 @@ class StudentView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['student_list'] = Student.objects.all()
+        # context['student_list'] = Student.objects.filter(created_by=self.request.user)
+        context['student_list'] = Student.objects.filter()
         return context
+    
+    # def form_valid(self, form):
+    #     form.instance.created_by = self.request.user
+    #     return super().form_valid(form)
 @method_decorator(login_required, name='dispatch')   
 class StudentDeleteView(View):
     def get(self, request, pk):
@@ -103,7 +111,7 @@ def class_selection(request):
     return render(request, 'attendance/class_select.html', context)
 
 
-
+@login_required
 def class_attendance(request, class_id):
     class_instance = get_object_or_404(Class, id=class_id)
     start_date = request.GET.get('start_date')
@@ -206,3 +214,67 @@ def attendance_delete(request, pk):
 #     }
     
 #     return render(request, 'attendance/attendance_submit.html', context)
+
+
+@login_required
+def report_class(request):
+    class_list=Class.objects.all()
+
+    if request.method == 'POST':
+        class_id = request.POST.get('class_id')
+        if class_id:  # Check if class_id is not empty
+            return redirect('report', pk=class_id)
+        else:
+            messages.error(request, 'No class selected.')
+    context = {
+        'list':class_list
+        }
+    return render(request, 'attendance/report_class.html', context)
+@method_decorator(login_required, name='dispatch')
+class ReportGenerate(View):
+    def get(self, request, pk):
+        class_instance = get_object_or_404(Class, id=pk)
+        attendance_records = class_instance.attendance_set.all()
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        print(start_date, end_date)
+        if start_date and end_date:
+            attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date]).select_related('student')
+        else:
+            attendance_records = class_instance.attendance_set.all()
+        serializer_data=AttendanceSerializer(attendance_records, many=True).data
+
+        present_count = attendance_records.filter(status='Present').count()
+        absent_count = attendance_records.filter(status='Absent').count()
+        print(serializer_data,"The JSON data")
+        context = {
+            'class': class_instance,
+            'students': class_instance.students.all(),
+            'attendance_records': attendance_records,
+            'start_date': start_date,
+            'end_date': end_date,
+            'serialized_data':serializer_data,
+            'present_count': present_count,
+            'absent_count': absent_count
+        }
+        return render(request, 'attendance/report.html', context)
+    
+    def post(self, request, pk):
+        pass
+        # class_instance = get_object_or_404(Class, id=pk)
+        # start_date = request.POST.get('start_date')
+        # end_date = request.POST.get('end_date')
+        # if start_date and end_date:
+        #     attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date])
+        # else:
+        #     attendance_records = class_instance.attendance_set.all()
+        # # API call to generate the report
+        # serialized_records=AttendanceSerializer(attendance_records, many=True).data
+        # # print(attendance_records.data)
+
+        # context = {
+        #     'class': class_instance,
+        #     'students': class_instance.students.all(),
+        #     'attendance_records': serialized_records 
+        # }
+        # return render(request, 'attendance/report.html', context)
