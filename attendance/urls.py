@@ -11,7 +11,10 @@ urlpatterns = [
     path('class/', views.ClassView.as_view(), name='class'),
     path('class/delete/<int:pk>/', views.class_delete, name='cls_delete'),
     path('class/edit/<int:pk>/', views.class_edit, name='cls_edit'),
+    
     path('submit/<int:class_id>/', views.class_attendance, name='attendance_submission'),
+    path('attendance/delete/<int:pk>/', views.attendance_delete, name='delete_attendance'),
     path('class-selection/', views.class_selection, name='class_selection'),
+
 
     ]

@@ -1,15 +1,166 @@
 {% extends "base.html" %}
 {% load static %}
 
-
 {% block title %}
 Submit Attendance
-   
 {% endblock title %}
+
+{% block css %}
+<style>
+  body {
+    background-color: #f5f7fa;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Header and Card Styles */
+  .card {
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    background-color: #3b5998;
+    color: white;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .btn-primary, .btn-success {
+    background-color: #4caf50;
+    border: none;
+    transition: background-color 0.3s;
+  }
+
+  .btn-primary:hover, .btn-success:hover {
+    background-color: #45a049;
+  }
+
+  /* Table Styles */
+  .table {
+    margin-bottom: 20px;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+  }
+
+  .table th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .table td {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+  }
+
+  /* Button Styles */
+  .btn-lg {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f1f5f9;
+    cursor: pointer;
+  }
+
+  .btn-danger:hover {
+    background-color: #e53935;
+  }
+  .alert {
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: cornflowerblue;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: fadeIn 0.5s ease-out;
+  }
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+  .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+  .alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+  }
+  .alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+  }
+  .alert-dismissible .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: inherit;
+  }
+  .alert-dismissible .close span {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Badge Styles */
+  .badge {
+    font-size: 0.9em;
+    color: white;
+  }
+
+  .badge-success {
+    background-color: #4caf50;
+  }
+
+  .badge-danger {
+    background-color: #f44336;
+  }
+</style>
+{% endblock css %}
+
 {% block content %}
 <div class="container mt-5">
+
+
+
+  {% if messages %}
   <div class="row">
-    <!-- Left side: Add Attendance Form -->
+    <div class="col-12 mt-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Row with Attendance Form and Attendance List -->
+  <div class="row">
+    <!-- Left: Add Attendance Form -->
     <div class="col-md-6">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -19,7 +170,7 @@ Submit Attendance
           <form method="post" id="attendanceForm">
             {% csrf_token %}
             <table class="table table-bordered table-hover">
-              <thead class="thead-light">
+              <thead>
                 <tr>
                   <th>Student</th>
                   <th>Date</th>
@@ -28,7 +179,6 @@ Submit Attendance
                 </tr>
               </thead>
               <tbody id="attendanceTable">
-                <!-- Empty form fields for adding attendance -->
                 <tr>
                   <td>
                     <select name="form-0-student" class="form-control">
@@ -70,7 +220,7 @@ Submit Attendance
       </div>
     </div>
 
-    <!-- Right side: List of Attendance Records -->
+    <!-- Right: Attendance Records -->
     <div class="col-md-6">
       <div class="card shadow-sm">
         <div class="card-header bg-dark text-white">
@@ -99,6 +249,7 @@ Submit Attendance
                 <th>Student</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -110,6 +261,17 @@ Submit Attendance
                   <span class="badge badge-{% if attendance.status == 'present' %}success{% else %}danger{% endif %}">
                     {{ attendance.get_status_display }}
                   </span>
+                </td>
+                <td>
+                  <form method="post" action="{% url 'delete_attendance' attendance.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </form>
+                
+                 
+                  </button>
                 </td>
               </tr>
               {% empty %}
@@ -124,52 +286,46 @@ Submit Attendance
     </div>
   </div>
 </div>
+{% endblock content %}
 
-<style>
-  .badge {
-    font-size: 0.9em;
-  }
-  .btn-lg {
-    padding: 15px 30px;
-  }
-  .table-hover tbody tr:hover {
-    background-color: #f8f9fa;
-  }
-</style>
-
+{% block js %}
 <script>
-  document.getElementById('addAttendanceBtn').addEventListener('click', function() {
-    var table = document.getElementById('attendanceTable');
-    var rowCount = table.rows.length;
-    var row = table.insertRow(rowCount);
-    
-    row.innerHTML = `
-      <td>
-        <select name="form-${rowCount}-student" class="form-control">
-          {% for student in students %}
-          <option value="{{ student.id }}">{{ student.name }}</option>
-          {% endfor %}
-        </select>
-      </td>
-      <td><input type="date" name="dates" class="form-control"></td>
-      <td>
-        <select name="form-${rowCount}-status" class="form-control">
-          {% for value, label in status_choices %}
-          <option value="{{ value }}">{{ label }}</option>
-          {% endfor %}
-        </select>
-      </td>
-      <td>
-        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
-          <i class="fas fa-trash-alt"></i> Remove
-        </button>
-      </td>
-    `;
+  document.addEventListener('DOMContentLoaded', function() {
+    let rowIdx = 1;
+
+    document.getElementById('addAttendanceBtn').addEventListener('click', function() {
+        let table = document.getElementById('attendanceTable');
+        let newRow = table.insertRow();
+
+        newRow.innerHTML = `
+          <td>
+            <select name="form-${rowIdx}-student" class="form-control">
+              {% for student in students %}
+              <option value="{{ student.id }}">{{ student.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td><input type="date" name="dates" class="form-control"></td>
+          <td>
+            <select name="form-${rowIdx}-status" class="form-control">
+              {% for value, label in status_choices %}
+              <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+              <i class="fas fa-trash-alt"></i> Remove
+            </button>
+          </td>
+        `;
+        rowIdx++;
+    });
   });
 
   function removeRow(button) {
-    var row = button.parentElement.parentElement;
-    row.parentElement.removeChild(row);
+    let row = button.closest('tr');
+    row.remove();
   }
 </script>
-{% endblock content %}
+{% endblock js %}

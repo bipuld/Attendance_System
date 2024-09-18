@@ -108,6 +108,8 @@ def class_attendance(request, class_id):
     class_instance = get_object_or_404(Class, id=class_id)
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    
+    # searching query for attendance records
     if start_date and end_date:
         try:
             attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date])
@@ -120,6 +122,14 @@ def class_attendance(request, class_id):
         student_ids = request.POST.getlist('form-0-student')
         dates = request.POST.getlist('dates')
         statuses = request.POST.getlist('form-0-status')
+        # print(student_ids, dates, statuses)
+        # print(len(student_ids), len(dates), len(statuses))
+        # flag=request.POST.get('flag')
+        # print(flag,"jiojiojiopjio")
+        # if flag:
+        #     print("flag is true")
+
+
 
         if len(student_ids) == len(dates) == len(statuses):
             for student_id, date, status in zip(student_ids, dates, statuses):
@@ -133,7 +143,9 @@ def class_attendance(request, class_id):
                             defaults={'status': status}
                         )
                     else:
-                        print(f"Date is missing for student ID {student_id}.")
+                        messages.error(request, f"Date is required for the attendance submission of the  {student_instance.name}.")
+                        return redirect('attendance_submission', class_id=class_id)
+                        # print(f"Date is missing for student ID {student_id}.")
                 except Student.DoesNotExist:
                     print(f"Student with ID {student_id} does not exist.")
             return redirect('home')
@@ -148,6 +160,22 @@ def class_attendance(request, class_id):
     }
     
     return render(request, 'attendance/attendance_submit.html', context)
+
+
+@login_required
+def attendance_delete(request, pk):
+    try:
+        class_id=Attendance.objects.get(id=pk).class_instance
+        print(class_id,"sdas")
+        attendance = Attendance.objects.get(id=pk)
+        attendance.delete()
+        messages.success(request, 'Attendance deleted successfully.')
+        return redirect('attendance_submission', class_id=class_id.id)
+    except Attendance.DoesNotExist:
+        messages.error(request, 'Attendance not found.')
+    return redirect('home')
+
+
 
 # @login_required
 # def class_attendance(request, class_id):
