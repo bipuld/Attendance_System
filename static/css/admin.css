@@ -1,0 +1,140 @@
+/* Header */
+#header {
+    background: linear-gradient(135deg, #2c3e50, #34495e); /* Gradient background for depth */
+    color: #ecf0f1; /* Light color for better contrast */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Softer shadow */
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    padding: 20px; /* Increased padding for a more spacious feel */
+    font-family: 'Arial', sans-serif; /* Clean font */
+    border-bottom: 3px solid #e74c3c; /* Underline for added elegance */
+}
+
+/* Header Links */
+#header a:link,
+#header a:visited {
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: color 0.3s, transform 0.3s;
+}
+
+#header a:hover {
+    color: #e74c3c; /* Slightly brighter hover color */
+    transform: scale(1.05); /* Slight scaling effect */
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: linear-gradient(135deg, #34495e, #2c3e50); /* Gradient for consistency */
+    color: #ecf0f1;
+    padding: 15px; /* Increased padding for better readability */
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Module Headers */
+.module h2,
+.module caption,
+.inline-group h2 {
+    background: linear-gradient(135deg, #34495e, #2c3e50); /* Consistent gradient */
+    color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.6em; /* Slightly larger font for prominence */
+    border-bottom: 2px solid #e74c3c; /* Underline for added style */
+    margin-bottom: 15px; /* Spacing below header */
+}
+
+/* Buttons */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+    background: linear-gradient(135deg, #2980b9, #3498db); /* Gradient for modern look */
+    color: #fff;
+    padding: 12px 20px; /* Increased padding for better touch targets */
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.3s;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow effect */
+}
+
+.button:active,
+input[type=submit]:active,
+input[type=button]:active,
+.button:focus,
+input[type=submit]:focus,
+input[type=button]:focus,
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover {
+    background: linear-gradient(135deg, #3498db, #2980b9); /* Reverse gradient on hover */
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); /* More pronounced shadow on hover */
+    transform: translateY(-2px); /* Lift effect on hover */
+}
+
+/* Default Buttons */
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+    border: none;
+    cursor: pointer;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s, transform 0.3s;
+    border-radius: 8px;
+}
+
+.button.default:active,
+input[type=submit].default:active,
+.button.default:focus,
+input[type=submit].default:focus,
+.button.default:hover,
+input[type=submit].default:hover {
+    background: linear-gradient(135deg, #34495e, #2c3e50); /* Reverse gradient on hover */
+    transform: translateY(-2px); /* Lift effect on hover */
+}
+
+/* Links */
+a:link,
+a:visited {
+    color: #2980b9;
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+a:hover {
+    color: #e74c3c;
+    text-decoration: underline;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+}
+
+/* Additional Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.example-fade-in {
+    animation: fadeIn 1s ease-in-out;
+    animation-fill-mode: both;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    #header, .breadcrumbs, .module h2 {
+        padding: 15px; /* Slightly adjusted padding */
+    }
+    .button, input[type=submit], input[type=button] {
+        width: 100%; /* Make buttons full-width on small screens */
+        padding: 12px; /* Uniform padding */
+    }
+}

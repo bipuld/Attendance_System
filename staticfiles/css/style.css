@@ -1,0 +1,35 @@
+
+body {
+    background: #222D32;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+
+}
+  
+  .hero {
+    background-color: #0d6efd;
+    color: #fff;
+    padding: 100px 0;
+    text-align: center;
+    background-image: linear-gradient(135deg, #007bff, #0056b3);
+  }
+  .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+  }
+  .hero p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .footer {
+    padding: 20px;
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+
+

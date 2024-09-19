@@ -28,9 +28,6 @@ class Class(models.Model):
         db_column="created_by",
         null=True
     )
-
-    
-    
     created_date=models.DateTimeField(default=timezone.now)
 
     def __str__(self):
