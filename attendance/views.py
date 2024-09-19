@@ -9,12 +9,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import PermissionDenied
+from datetime import datetime, timedelta
 from django.contrib import messages
 from django.urls import reverse_lazy
 from attendance.serializers.attendance_serializer import AttendanceSerializer
 from .forms import *
 from .models import *
-
+from django.urls import reverse
+from django.utils.http import urlencode
 # Create your views here.
 @login_required
 def home(request):
@@ -261,17 +263,20 @@ def attendance_delete(request, pk):
 
 @login_required
 def report_class(request):
-    class_list=Class.objects.filter(created_by=request.user)
+    class_list = Class.objects.filter(created_by=request.user)
     if request.method == 'POST':
         class_id = request.POST.get('class_id')
-        if class_id:  # Check if class_id is not empty
-            return redirect('report', pk=class_id)
+        if class_id:
+                url = reverse('report', kwargs={'pk': class_id})
+                return redirect(url)
         else:
             messages.error(request, 'No class selected.')
     context = {
-        'list':class_list
-        }
+        'list': class_list
+    }
     return render(request, 'attendance/report_class.html', context)
+
+
 @method_decorator(login_required, name='dispatch')
 class ReportGenerate(View):
     def get(self, request, pk):
@@ -323,3 +328,104 @@ class ReportGenerate(View):
         #     'attendance_records': serialized_records 
         # }
         # return render(request, 'attendance/report.html', context)
+
+
+@method_decorator(login_required, name='dispatch')
+class WeeklyReport(View):
+    
+    def generate_report(self, selected_class, start_date, end_date):
+        attendance_records = Attendance.objects.filter(
+            class_instance=selected_class,
+            date__range=[start_date, end_date]
+        )
+        present_count = attendance_records.filter(status='Present').count()
+        absent_count = attendance_records.filter(status='Absent').count()
+
+        return attendance_records, present_count, absent_count
+
+    def get(self, request):
+        class_data = Class.objects.filter(created_by=request.user)
+        selected_class_id = request.GET.get('class_id')
+        attendance_records = None
+        present_count = absent_count = 0
+        start_date = datetime.now().date()
+        end_date = start_date + timedelta(days=7)
+        
+        if selected_class_id:
+            try:
+                selected_class = Class.objects.get(id=selected_class_id)
+                attendance_records, present_count, absent_count = self.generate_report(selected_class, start_date, end_date)
+            except Class.DoesNotExist:
+                messages.error(request, 'Class not found.')
+
+        context = {
+            'attendance_records': attendance_records,
+            'start_date': start_date,
+            'end_date': end_date,
+            'class_data': class_data,
+            'selected_class_id': selected_class_id,
+            'present_count': present_count,
+            'absent_count': absent_count,
+        }
+        
+        return render(request, 'attendance/weekly_report.html', context)
+class MonthlyReport(View):
+    
+    def generate_report(self, selected_class, start_date, end_date):
+        attendance_records = Attendance.objects.filter(
+            class_instance=selected_class,
+            date__range=[start_date, end_date]
+        )
+        present_count = attendance_records.filter(status='Present').count()
+        absent_count = attendance_records.filter(status='Absent').count()
+
+        return attendance_records, present_count, absent_count
+
+    def get(self, request):
+        class_data = Class.objects.filter(created_by=request.user)
+        selected_class_id = request.GET.get('class_id')
+        attendance_records = None
+        present_count = absent_count = 0
+        start_date = datetime.now().date()
+        end_date = start_date + timedelta(days=30)
+        
+        if selected_class_id:
+            try:
+                selected_class = Class.objects.get(id=selected_class_id)
+                attendance_records, present_count, absent_count = self.generate_report(selected_class, start_date, end_date)
+            except Class.DoesNotExist:
+                messages.error(request, 'Class not found.')
+
+        context = {
+            'attendance_records': attendance_records,
+            'start_date': start_date,
+            'end_date': end_date,
+            'class_data': class_data,
+            'selected_class_id': selected_class_id,
+            'present_count': present_count,
+            'absent_count': absent_count,
+        }
+        
+        return render(request, 'attendance/weekly_report.html', context)
+
+# @login_required
+# def report_generate_date(request, pk):
+#     class_instance = get_object_or_404(Class, id=pk)
+#     start_date = request.GET.get('start_date')
+#     end_date = request.GET.get('end_date')
+#     if start_date and end_date:
+#         attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date])
+#     else:
+#         attendance_records = class_instance.attendance_set.all()
+#     present_count = attendance_records.filter(status='Present').count()
+#     absent_count = attendance_records.filter(status='Absent').count()
+#     context = {
+#         'class': class_instance,
+#         'students': class_instance.students.all(),
+#         'attendance_records': attendance_records,
+#         'start_date': start_date,
+#         'end_date': end_date,
+#         'present_count': present_count,
+#         'absent_count': absent_count
+#     }
+#     return render(request, 'attendance/report.html', context

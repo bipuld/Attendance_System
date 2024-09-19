@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Select Class for Attendance Report{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center font-weight-bold">
+        {% if request.resolver_match.url_name == 'weekly_report' %}
+            Weekly Attendance Summary Report
+        {% else %}
+            Monthly Attendance Summary Report
+        {% endif %}
+    </h2>
+
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+            <form id="attendanceForm" method="GET" action="{% url request.resolver_match.url_name %}">
+                <input type="hidden" id="endDateHidden" name="end_date" value="{{ end_date }}">
+                <div class="form-group">
+                    <label for="classSelect" class="font-weight-bold">Choose a Class</label>
+                        <div style="position: relative; display: inline-block; width: 100%; max-width: 300px;">
+                            <select 
+                                id="classSelect" 
+                                name="class_id" 
+                                required 
+                                style="
+                                    appearance: none; /* Remove default styling */
+                                    border-radius: 8px; /* Reduced border radius */
+                                    border: 2px solid #007bff; 
+                                    font-size: 1rem; /* Reduced font size */
+                                    padding: 0.5rem 1rem; /* Reduced padding */
+                                    background-color: #ffffff; 
+                                    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Slightly smaller shadow */
+                                    transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+                                    width: 100%;
+                                    text-align: left; /* Align text to the left */
+                                "
+                            >
+                                <option value="">Select a class</option>
+                                {% for class in class_data %}
+                                <option 
+                                    value="{{ class.id }}" 
+                                    {% if class.id|stringformat:"s" == selected_class_id %}selected{% endif %}
+                                >
+                                    {{ class.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <i 
+                                class="fas fa-chevron-down" 
+                                style="
+                                    position: absolute; 
+                                    right: 10px; 
+                                    top: 50%; 
+                                    transform: translateY(-50%); 
+                                    font-size: 1rem; /* Reduced icon size */
+                                    color: #007bff; 
+                                    pointer-events: none; /* Prevents icon from capturing clicks */
+                                "
+                            ></i>
+                        </div>
+                    
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="startDate" class="font-weight-bold">Start Date</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input 
+                                type="text" 
+                                id="startDate" 
+                                name="start_date" 
+                                class="form-control fixed-date enhanced-input" 
+                                value="{{ start_date|date:'Y-m-d' }}" 
+                                readonly 
+                                style="
+                                    padding-left: 2.5rem; /* Space for the calendar icon */
+                                    border-radius: 10px; 
+                                    border: 2px solid #007bff; 
+                                    font-size: 1.15rem; 
+                                    background-color: #e9ecef; 
+                                    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+                                "
+                            >
+                            <i 
+                                class="fas fa-calendar-alt" 
+                                style="
+                                    position: absolute; 
+                                    left: 10px; 
+                                    top: 50%; 
+                                    transform: translateY(-50%); 
+                                    font-size: 1.25rem; 
+                                    color: #007bff; 
+                                    pointer-events: none; /* Prevents icon from capturing clicks */
+                                "
+                            ></i>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="endDate" class="font-weight-bold">End Date</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input 
+                                type="text" 
+                                id="endDate" 
+                                name="end_date" 
+                                class="form-control fixed-date enhanced-input" 
+                                value="{{ end_date|date:'Y-m-d' }}" 
+                                readonly 
+                                style="
+                                    padding-left: 2.5rem; /* Adjust padding to accommodate the icon */
+                                    border-radius: 10px; 
+                                    border: 2px solid #007bff; 
+                                    font-size: 1.15rem; 
+                                    background-color: #e9ecef; 
+                                    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+                                "
+                            >
+                            <i 
+                                class="fas fa-calendar-alt" 
+                                style="
+                                    position: absolute; 
+                                    left: 10px; 
+                                    top: 50%; 
+                                    transform: translateY(-50%); 
+                                    font-size: 1.25rem; 
+                                    color: #007bff; 
+                                    pointer-events: none; /* Prevent icon from capturing clicks */
+                                "
+                            ></i>
+                        </div>
+                        
+                    </div>
+                </div>
+            
+                <div class="text-center mt-3">
+                    <button 
+                    type="submit" 
+                    class="btn btn-gradient-awesome" 
+                    style="
+                        background: linear-gradient(135deg, #007bff, #6610f2, #f95b00); 
+                        color: white; 
+                        border: none; 
+                        border-radius: 30px; /* Smaller border radius */
+                        font-size: 1rem; /* Reduced font size */
+                        padding: 0.5rem 1rem; /* Reduced padding */
+                        transition: all 0.4s ease; 
+                        position: relative; 
+                        overflow: hidden; 
+                        text-transform: uppercase; /* Make text uppercase */
+                    "
+                >
+                    <i 
+                        class="fas fa-chart-line" 
+                        style="
+                            margin-right: 0.5rem; 
+                            font-size: 1rem; /* Reduced icon size */
+                            transition: transform 0.4s ease; 
+                        "
+                    ></i> 
+                    Generate Report
+                </button>
+                
+                </div>
+            </form>
+
+            {% if attendance_records %}
+            <div class="row report-section mt-5">
+                <div class="col-lg-8">
+                    <div class="table-responsive">
+                        <h2 class="mb-3">Attendance Report ({{ start_date|date:'Y-m-d' }} to {{ end_date|date:'Y-m-d' }})</h2>
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_records %}
+                                    <tr>
+                                        <td>{{ record.date|date:"Y-m-d" }}</td>
+                                        <td>{{ record.student.name }}</td>
+                                        <td>{{ record.status }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No attendance records available for this class and date range</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pie Chart Section for Attendance Status -->
+                <div class="col-lg-4 pie-chart-wrapper">
+                    <figure>
+                        <figcaption style="text-align: center; font-weight: bold; margin-bottom: 10px;">Attendance Status</figcaption>
+                        <div class="pie-chart-container">
+                            <canvas id="attendancePieChart"></canvas>
+                        </div>
+                    </figure>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const presentCount = {{ present_count }};
+    const absentCount = {{ absent_count }};
+    
+    const ctx = document.getElementById('attendancePieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Present', 'Absent'],
+            datasets: [{
+                label: 'Attendance Status',
+                data: [presentCount, absentCount],
+                backgroundColor: ['#28a745', '#dc3545']
+            }]
+        }
+    });
+</script>
+{% endblock %}

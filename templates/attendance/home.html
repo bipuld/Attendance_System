@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% load tz %}
 {% block title %}
   Home
 {% endblock title %}
@@ -51,8 +51,11 @@
           <div class="card-body">
             <h5 class="card-title">View Weekly Reports</h5>
             <p class="card-text">Get detailed attendance data for the last week.</p>
-            <a href="#" class="btn btn-primary">Weekly Report</a>
-            {% comment %} <a href="{% url 'attendance_report' %}?report_type=weekly" class="btn btn-primary">Weekly Report</a> {% endcomment %}
+            {% comment %} <form method="GET" action="{% url 'weekly_report' %}">
+              <input type="hidden" name="source" value="weekly-report">
+              <button type="submit" class="btn btn-primary">Weekly Report</button>
+            </form> {% endcomment %}
+            <a href="{% url 'weekly_report' %}?source=weekly-report" class="btn btn-primary">Weekly Report</a>
           </div>
         </div>
       </div>
@@ -61,7 +64,12 @@
           <div class="card-body">
             <h5 class="card-title">View Monthly Reports</h5>
             <p class="card-text">Analyze attendance patterns with monthly reports.</p>
-            <a href="#" class="btn btn-primary">Monthly Report</a>
+            {% comment %} <form method="GET" action="{% url 'weekly_report' %}">
+              <input type="hidden" name="source" value="monthly-report"> {% endcomment %}
+              {% comment %} <button type="submit" class="btn btn-primary">Monthly Report</button> {% endcomment %}
+            {% comment %} <a href="{% url 'weekly_report' %}?source=monthly-report" class="btn btn-primary">Monthly Report</a> {% endcomment %}
+            <a href="{% url 'monthly_report' %}?source=monthly-report" class="btn btn-primary">Monthly Report</a>
+            {% comment %} </form> {% endcomment %}
           </div>
         </div>
       </div>

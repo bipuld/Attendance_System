@@ -49,7 +49,6 @@
     <h1 class="mb-4">Attendance Report for {{ class.name }}</h1>
 
     <form method="GET" action="{% url 'report' class.id %}">
-        {% csrf_token %}
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="form-group">
@@ -70,7 +69,6 @@
 
     {% if attendance_records %}
     <div class="row report-section">
-        <!-- Attendance Table Section -->
         <div class="col-lg-8">
             <div class="table-responsive">
                 <h2 class="mb-3">Report Data</h2>

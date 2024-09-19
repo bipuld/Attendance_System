@@ -16,6 +16,6 @@ urlpatterns = [
 
     path('report_class/', views.report_class, name='report_class'),
     path('report/generate/<int:pk>',views.ReportGenerate.as_view() , name='report'),
-
-
+    path('report/generate/weekly/', views.WeeklyReport.as_view(), name='weekly_report'),
+    path('report/generate/monthly/', views.MonthlyReport.as_view(), name='monthly_report')
     ]

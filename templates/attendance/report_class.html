@@ -23,10 +23,11 @@
                     <h4 class="mb-0">Select a Class</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{% url 'report_class' %}">
+                    <form method="POST" action="{% url 'report_class' %}?">
                         {% csrf_token %}
                         <div class="form-group">
-                            <input type="hidden" name="action" value="attendance">
+                            <input type="hidden" name="source" value="{{ request.GET.source }}">
+
                             <label for="classSelect">Choose a Class</label>
                             <select id="classSelect" name="class_id" class="form-control">
                                 <option value="">Select a class</option>
