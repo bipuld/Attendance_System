@@ -5,8 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import get_object_or_404, redirect
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.urls import reverse_lazy
 from attendance.serializers.attendance_serializer import AttendanceSerializer
@@ -18,9 +20,7 @@ from .models import *
 def home(request):
     return render(request, 'attendance/home.html')
 
-# @login_required
-# def attendance_submission_class(request):
-#     return render(request, 'attendance/att_entry.html')
+
 @method_decorator(login_required, name='dispatch')
 class StudentView(CreateView):
     model = Student
@@ -30,39 +30,58 @@ class StudentView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['student_list'] = Student.objects.filter(created_by=self.request.user)
-        context['student_list'] = Student.objects.filter()
+        context['student_list'] = Student.objects.filter(created_by=self.request.user)
         return context
     
-    # def form_valid(self, form):
-    #     form.instance.created_by = self.request.user
-    #     return super().form_valid(form)
-@method_decorator(login_required, name='dispatch')   
-class StudentDeleteView(View):
-    def get(self, request, pk):
-        try:
-            student = Student.objects.get(id=pk)
-            student.delete()
-            messages.success(request, 'Student deleted successfully.')
-        except Student.DoesNotExist:
-            messages.error(request, 'Student not found.')
-        return redirect('student')  # Redirect to the student list view
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+
+
+
+
 @method_decorator(login_required, name='dispatch')
-class StudentEditView(UpdateView):
+class StudentEditView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = StudentCreationForm
     template_name = 'attendance/student_edit.html'
     success_url = reverse_lazy('student')
+
     def get_object(self):
-        id = self.kwargs.get('pk')
-        return get_object_or_404(Student, id=id)
-    
+        student = get_object_or_404(Student, id=self.kwargs.get('pk'))
+        # print(student.created_by, self.request.user)
+        if student.created_by != self.request.user:
+            messages.error(self.request, 'You do not have permission to edit this student.')
+            raise PermissionDenied
+
+        return student
+        
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, 'Student updated successfully.')
         return response
-    
+
+
+@method_decorator(login_required, name='dispatch')
+class StudentDeleteView(View):
+    def get(self, request, pk):
+        student = get_object_or_404(Student, id=pk)
+        if student.created_by == request.user:
+            student.delete()
+            messages.success(request, 'Student deleted successfully.')
+        else:
+            messages.error(request, 'You do not have permission to delete this student.')
+            raise PermissionDenied
+        return redirect('student')  
+
+
 @method_decorator(login_required, name='dispatch')
 class ClassView(CreateView):
     model = Class
@@ -70,14 +89,25 @@ class ClassView(CreateView):
     template_name = 'attendance/class.html'
     success_url = reverse_lazy('class')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['class_list'] = Class.objects.all()
+        context['class_list'] = Class.objects.filter(created_by=self.request.user)
         return context
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
     
 @login_required
 def class_delete(request, pk):
     try:
+        if Class.objects.get(id=pk).created_by != request.user:
+            messages.error(request, 'You do not have permission to delete this class.')
+            raise PermissionDenied
         class_instance = Class.objects.get(id=pk)
         class_instance.delete()
         messages.success(request, 'Class deleted successfully.')
@@ -88,20 +118,25 @@ def class_delete(request, pk):
 @login_required
 def class_edit(request, pk):
     class_instance = get_object_or_404(Class, id=pk)
-    form = ClassCreationForm(request.POST or None, instance=class_instance)
- 
+    if class_instance.created_by != request.user:
+        messages.error(request, 'You do not have permission to edit this class.')
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        form = ClassCreationForm(request.POST, instance=class_instance, request=request)
+    else:
+        form = ClassCreationForm(instance=class_instance, request=request)
 
     if form.is_valid():
         form.save()
         messages.success(request, 'Class updated successfully.')
-        return redirect('class')
-    
+        return redirect('class') 
     return render(request, 'attendance/class_edit.html', {'form': form, 'class': class_instance})
 
 # class selection view
 @login_required
 def class_selection(request):
-    class_list=Class.objects.all()
+    class_list=Class.objects.filter(created_by=request.user)
     if request.method == 'POST':
         class_id = request.POST.get('class_id')
         return redirect('attendance_submission', class_id=class_id)
@@ -114,10 +149,11 @@ def class_selection(request):
 @login_required
 def class_attendance(request, class_id):
     class_instance = get_object_or_404(Class, id=class_id)
+    if class_instance.created_by != request.user:
+        messages.error(request, 'You do not have permission to submit attendance for this class.')
+        raise PermissionDenied
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    
-    # searching query for attendance records
     if start_date and end_date:
         try:
             attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date])
@@ -125,40 +161,45 @@ def class_attendance(request, class_id):
             attendance_records = class_instance.attendance_set.none()  
     else:
         attendance_records = class_instance.attendance_set.all()
-
     if request.method == 'POST':
-        student_ids = request.POST.getlist('form-0-student')
-        dates = request.POST.getlist('dates')
-        statuses = request.POST.getlist('form-0-status')
-        # print(student_ids, dates, statuses)
-        # print(len(student_ids), len(dates), len(statuses))
-        # flag=request.POST.get('flag')
-        # print(flag,"jiojiojiopjio")
-        # if flag:
-        #     print("flag is true")
+        # print(request.POST)
+        i=0
+        form_data=request.POST
+        std_data=[]
+        while True:
+            student_key=f'form-{i}-student'
+            date_key=f'form-{i}-date'
+            status_key=f'form-{i}-status'
 
-
-
-        if len(student_ids) == len(dates) == len(statuses):
-            for student_id, date, status in zip(student_ids, dates, statuses):
-                try:
-                    student_instance = Student.objects.get(pk=student_id)
-                    if date:  
-                        Attendance.objects.update_or_create(
-                            student=student_instance,
-                            class_instance=class_instance,
-                            date=date,
-                            defaults={'status': status}
-                        )
-                    else:
-                        messages.error(request, f"Date is required for the attendance submission of the  {student_instance.name}.")
-                        return redirect('attendance_submission', class_id=class_id)
-                        # print(f"Date is missing for student ID {student_id}.")
-                except Student.DoesNotExist:
-                    print(f"Student with ID {student_id} does not exist.")
-            return redirect('home')
-        else:
-            print("Mismatch in the number of student IDs, dates, and statuses.")
+            if student_key in form_data and date_key in form_data and status_key in form_data:
+                student_id=form_data[student_key]
+                date=form_data[date_key]
+                status=form_data[status_key]
+                std_data.append({'student':student_id,'date':date,'status':status}) # append the data to the list of dictionaries 
+                i+=1
+            else:
+                break
+        for data in std_data:
+            student_id=data['student']
+            date=data['date']
+            status=data['status']
+            try:
+                student_instance = Student.objects.get(pk=student_id)
+                if date:
+                    Attendance.objects.update_or_create(
+                        student=student_instance,
+                        class_instance=class_instance,
+                        date=date,
+                        status=status
+                    )
+                else:
+                    messages.error(request, "Date is required for all attendance records.")
+                    return redirect('attendance_submission', class_id=class_id)
+            except Student.DoesNotExist:
+                messages.error(request, f"Student with ID {student_id} does not exist.")
+                return redirect('attendance_submission', class_id=class_id)
+            
+        return redirect('home')
 
     context = {
         'class_instance': class_instance,
@@ -174,7 +215,9 @@ def class_attendance(request, class_id):
 def attendance_delete(request, pk):
     try:
         class_id=Attendance.objects.get(id=pk).class_instance
-        print(class_id,"sdas")
+        if class_id.created_by != request.user:
+            messages.error(request, 'You do not have permission to delete this attendance.')
+            raise PermissionDenied
         attendance = Attendance.objects.get(id=pk)
         attendance.delete()
         messages.success(request, 'Attendance deleted successfully.')
@@ -218,8 +261,7 @@ def attendance_delete(request, pk):
 
 @login_required
 def report_class(request):
-    class_list=Class.objects.all()
-
+    class_list=Class.objects.filter(created_by=request.user)
     if request.method == 'POST':
         class_id = request.POST.get('class_id')
         if class_id:  # Check if class_id is not empty
@@ -233,23 +275,26 @@ def report_class(request):
 @method_decorator(login_required, name='dispatch')
 class ReportGenerate(View):
     def get(self, request, pk):
-        class_instance = get_object_or_404(Class, id=pk)
-        attendance_records = class_instance.attendance_set.all()
+        class_data = get_object_or_404(Class, id=pk)
+        if class_data.created_by != request.user:
+            messages.error(request, 'You do not have permission to view this report.')
+            raise PermissionDenied
+        attendance_records = class_data.attendance_set.all()
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
-        print(start_date, end_date)
+     
         if start_date and end_date:
-            attendance_records = class_instance.attendance_set.filter(date__range=[start_date, end_date]).select_related('student')
+            attendance_records = class_data.attendance_set.filter(date__range=[start_date, end_date]).select_related('student')
         else:
-            attendance_records = class_instance.attendance_set.all()
+            attendance_records = class_data.attendance_set.all()
         serializer_data=AttendanceSerializer(attendance_records, many=True).data
 
         present_count = attendance_records.filter(status='Present').count()
         absent_count = attendance_records.filter(status='Absent').count()
-        print(serializer_data,"The JSON data")
+        # print(serializer_data,"The JSON data")
         context = {
-            'class': class_instance,
-            'students': class_instance.students.all(),
+            'class': class_data,
+            'students': class_data.students.all(),
             'attendance_records': attendance_records,
             'start_date': start_date,
             'end_date': end_date,

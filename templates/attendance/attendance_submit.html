@@ -187,7 +187,7 @@ Submit Attendance
                       {% endfor %}
                     </select>
                   </td>
-                  <td><input type="date" name="dates" class="form-control"></td>
+                  <td><input type="date" name="form-0-date" class="form-control"></td>
                   <td>
                     <select name="form-0-status" class="form-control">
                       {% for value, label in status_choices %}
@@ -305,7 +305,7 @@ Submit Attendance
               {% endfor %}
             </select>
           </td>
-          <td><input type="date" name="dates" class="form-control"></td>
+          <td><input type="date" name="form-${rowIdx}-date" class="form-control"></td>
           <td>
             <select name="form-${rowIdx}-status" class="form-control">
               {% for value, label in status_choices %}
