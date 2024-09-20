@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8)hhv7ocyewetc3gela4#ubsa-r2_5@d7%w5fkm3pjn8opx_7n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,7 +37,7 @@ EXTERNAL_APPS = [
     'core', # the core app is created to handle the custom user manager
     'attendance',
     'account', # this account app is used to managea and handle the user account 
-    'widget_tweaks',  # Ensure widget_tweaks is listed here
+    'widget_tweaks', # this app is used to add bootstrap classes to the form fields
 
 ]
 INSTALLED_APPS.extend(EXTERNAL_APPS)
