@@ -16,7 +16,7 @@ Issue: The problem with tracking student attendance across different users (teac
 Resolution: I overcame this by securing the database architecture with deliberate support for multi-tenancy.
 I made sure that all records of every user were only accessible to a particular user and encourage them to use the other shared data (students, classes) by joining in on it. By planning relationships logically and writing out the multiple rounds of testing performed for data integrity, we made sure each user had a feel for one seamless way to manage pay and hours.
 
-## Features 1.
+## Features.
 1.**Student Management**:
 - Add Student
 - Edit Student
