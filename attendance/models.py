@@ -16,7 +16,7 @@ class Student(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.id} {self.name}"
+        return f"{self.name}"
     
 class Class(models.Model):
     name=models.CharField(max_length=255)
@@ -45,8 +45,8 @@ class Attendance(models.Model):
 
 
     def __str__(self):
-        return f"{self.student} - {self.date} - {{self.get_status_display()}}"
+        return f"{self.student} - {self.date}"
     
 
     class Meta:
-        unique_together = ('student', 'class_instance', 'date')  # Ensure a student can have only one attendance record per date
+        unique_together = ('student', 'class_instance', 'date') 

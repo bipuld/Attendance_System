@@ -65,6 +65,13 @@ class StudentEditView(LoginRequiredMixin, UpdateView):
 
         return student
         
+    def get_form_kwargs(self):
+
+        kwargs = super(StudentEditView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, 'Student updated successfully.')
@@ -330,9 +337,7 @@ class ReportGenerate(View):
         # return render(request, 'attendance/report.html', context)
 
 
-@method_decorator(login_required, name='dispatch')
-class WeeklyReport(View):
-    
+class WeeklyReport(LoginRequiredMixin, View):
     def generate_report(self, selected_class, start_date, end_date):
         attendance_records = Attendance.objects.filter(
             class_instance=selected_class,
@@ -340,7 +345,7 @@ class WeeklyReport(View):
         )
         present_count = attendance_records.filter(status='Present').count()
         absent_count = attendance_records.filter(status='Absent').count()
-
+        print(attendance_records, "The attendance records are weekly")
         return attendance_records, present_count, absent_count
 
     def get(self, request):
@@ -350,11 +355,13 @@ class WeeklyReport(View):
         present_count = absent_count = 0
         start_date = datetime.now().date()
         end_date = start_date + timedelta(days=7)
-        
+
         if selected_class_id:
             try:
                 selected_class = Class.objects.get(id=selected_class_id)
-                attendance_records, present_count, absent_count = self.generate_report(selected_class, start_date, end_date)
+                attendance_records, present_count, absent_count = self.generate_report(
+                    selected_class, start_date, end_date
+                )
             except Class.DoesNotExist:
                 messages.error(request, 'Class not found.')
 
@@ -367,10 +374,10 @@ class WeeklyReport(View):
             'present_count': present_count,
             'absent_count': absent_count,
         }
-        
+
         return render(request, 'attendance/weekly_report.html', context)
-class MonthlyReport(View):
-    
+
+class MonthlyReport(LoginRequiredMixin, View):
     def generate_report(self, selected_class, start_date, end_date):
         attendance_records = Attendance.objects.filter(
             class_instance=selected_class,
@@ -388,11 +395,13 @@ class MonthlyReport(View):
         present_count = absent_count = 0
         start_date = datetime.now().date()
         end_date = start_date + timedelta(days=30)
-        
+
         if selected_class_id:
             try:
                 selected_class = Class.objects.get(id=selected_class_id)
-                attendance_records, present_count, absent_count = self.generate_report(selected_class, start_date, end_date)
+                attendance_records, present_count, absent_count = self.generate_report(
+                    selected_class, start_date, end_date
+                )
             except Class.DoesNotExist:
                 messages.error(request, 'Class not found.')
 
@@ -405,9 +414,8 @@ class MonthlyReport(View):
             'present_count': present_count,
             'absent_count': absent_count,
         }
-        
-        return render(request, 'attendance/weekly_report.html', context)
 
+        return render(request, 'attendance/weekly_report.html', context)
 # @login_required
 # def report_generate_date(request, pk):
 #     class_instance = get_object_or_404(Class, id=pk)

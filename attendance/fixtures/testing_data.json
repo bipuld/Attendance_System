@@ -1,0 +1,142 @@
+[
+    {
+        "model": "attendance.student",
+        "pk": 1,
+        "fields": {
+            "student_id": "123456",
+            "name": "Ram",
+            "created_by": 2,
+            "created_at": "2023-09-20T00:00:00Z"
+        }
+    },
+    {
+        "model": "attendance.student",
+        "pk": 2,
+        "fields": {
+            "student_id": "123457",
+            "name": "Shyam",
+            "created_by": 2,
+            "created_at": "2023-09-20T00:00:00Z"
+        }
+    },
+    {
+        "model": "attendance.student",
+        "pk": 3,
+        "fields": {
+            "student_id": "123458",
+            "name": "Hari",
+            "created_by": 2,
+            "created_at": "2023-09-20T00:00:00Z"
+        }
+    },
+    {
+        "model": "attendance.class",
+        "pk": 1,
+        "fields": {
+            "name": "Science",
+            "students": [1, 2],
+            "created_by": 2,
+            "created_date": "2023-09-20T00:00:00Z"
+        }
+    },
+    {
+        "model": "attendance.class",
+        "pk": 2,
+        "fields": {
+            "name": "Math",
+            "students": [3],
+            "created_by": 2,
+            "created_date": "2023-09-20T00:00:00Z"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 1,
+        "fields": {
+            "class_instance": 1,
+            "student": 1,
+            "date": "2024-09-20",
+            "status": "Absent"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 2,
+        "fields": {
+            "class_instance": 1,
+            "student": 2,
+            "date": "2024-09-20",
+            "status": "Absent"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 3,
+        "fields": {
+            "class_instance": 2,
+            "student": 3,
+            "date": "2024-09-20",
+            "status": "Absent"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 4,
+        "fields": {
+            "class_instance": 1,
+            "student": 1,
+            "date": "2024-09-26",
+            "status": "Absent"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 5,
+        "fields": {
+            "class_instance": 1,
+            "student": 2,
+            "date": "2024-09-26",
+            "status": "Present"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 6,
+        "fields": {
+            "class_instance": 2,
+            "student": 3,
+            "date": "2024-09-26",
+            "status": "Present"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 7,
+        "fields": {
+            "class_instance": 1,
+            "student": 1,
+            "date": "2024-10-19",
+            "status": "Absent"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 8,
+        "fields": {
+            "class_instance": 1,
+            "student": 2,
+            "date": "2024-10-19",
+            "status": "Present"
+        }
+    },
+    {
+        "model": "attendance.attendance",
+        "pk": 9,
+        "fields": {
+            "class_instance": 2,
+            "student": 3,
+            "date": "2024-10-19",
+            "status": "Absent"
+        }
+    }
+]
