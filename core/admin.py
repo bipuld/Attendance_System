@@ -7,7 +7,12 @@ class UserAdmin(BaseUserAdmin):
 
     list_display = ('id','email', 'first_name', 'last_name', 'mobile', 'is_staff', 'is_active', 'is_superuser')
 
+
     search_fields = ('id','email', 'first_name', 'last_name', 'mobile')
+
+
+    search_fields = ('email', 'first_name', 'last_name', 'mobile')
+
 
 
     search_fields = ('email', 'first_name', 'last_name', 'mobile')
@@ -22,7 +27,12 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+
     # Define the fields to be used in the add user form.
+
+
+
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
