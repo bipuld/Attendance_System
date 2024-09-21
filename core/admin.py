@@ -6,13 +6,8 @@ from .forms import UserCreationForm
 class UserAdmin(BaseUserAdmin):
 
     list_display = ('id','email', 'first_name', 'last_name', 'mobile', 'is_staff', 'is_active', 'is_superuser')
-<<<<<<< HEAD
-    search_fields = ('id','email', 'first_name', 'last_name', 'mobile')
-
-=======
     search_fields = ('email', 'first_name', 'last_name', 'mobile')
     
->>>>>>> ca6830d71ec008573f6c919a1d2c56d5aa070f9d
     list_filter = ('is_staff', 'is_active', 'is_superuser')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -20,13 +15,8 @@ class UserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login',)}),  # Adjusted to include only existing fields
     )
-<<<<<<< HEAD
-
-    # Define the fields to be used in the add user form.
-=======
     
   
->>>>>>> ca6830d71ec008573f6c919a1d2c56d5aa070f9d
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
