@@ -5,7 +5,7 @@ from .models import UserAccountManager
 from .forms import UserCreationForm
 class UserAdmin(BaseUserAdmin):
 
-    list_display = ('email', 'first_name', 'last_name', 'mobile', 'is_staff', 'is_active', 'is_superuser')
+    list_display = ('id','email', 'first_name', 'last_name', 'mobile', 'is_staff', 'is_active', 'is_superuser')
     search_fields = ('email', 'first_name', 'last_name', 'mobile')
     
     list_filter = ('is_staff', 'is_active', 'is_superuser')
@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
         ('Important dates', {'fields': ('last_login',)}),  # Adjusted to include only existing fields
     )
     
-    # Define the fields to be used in the add user form.
+  
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -24,8 +24,8 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    # Specify the model's ordering
-    ordering = ('email',)  # Use a field that exists in your model
+   
+    ordering = ('email',) 
 
     # Customize the form used for adding users.
     add_form = UserCreationForm
