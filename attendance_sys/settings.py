@@ -1,4 +1,4 @@
-import os 
+import os
 from pathlib import Path
 from datetime import timedelta
 from django.contrib.messages import constants as message_constants
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
 EXTERNAL_APPS = [
     'core', # the core app is created to handle the custom user manager
     'attendance',
-    'account', # this account app is used to managea and handle the user account 
+    'account', # this account app is used to managea and handle the user account
     'widget_tweaks', # this app is used to add bootstrap classes to the form fields
 
 ]
@@ -60,7 +60,7 @@ AUTH_USER_MODEL = 'core.UserAccountManager'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["templates"],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'attendance_sys.wsgi.application'
 
 DATABASES = {
 'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  
-        'NAME': BASE_DIR / 'db.sqlite3',         
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 
     # 'default': {
@@ -124,7 +124,7 @@ REST_FRAMEWORK = {
 
     # Paginator Setting for REST API
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 2, 
+    'PAGE_SIZE': 2,
 }
 
 
@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     # Lifetime of access tokens
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    
+
     # Lifetime of refresh tokens
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
@@ -214,5 +214,5 @@ LOGGING = {
 }
 
 
-LOGIN_URL = 'auth/login/' 
-LOGIN_REDIRECT_URL = 'home' 
+LOGIN_URL = 'auth/login/'
+LOGIN_REDIRECT_URL = 'home'

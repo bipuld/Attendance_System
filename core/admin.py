@@ -5,9 +5,9 @@ from .models import UserAccountManager
 from .forms import UserCreationForm
 class UserAdmin(BaseUserAdmin):
 
-    list_display = ('email', 'first_name', 'last_name', 'mobile', 'is_staff', 'is_active', 'is_superuser')
-    search_fields = ('email', 'first_name', 'last_name', 'mobile')
-    
+    list_display = ('id','email', 'first_name', 'last_name', 'mobile', 'is_staff', 'is_active', 'is_superuser')
+    search_fields = ('id','email', 'first_name', 'last_name', 'mobile')
+
     list_filter = ('is_staff', 'is_active', 'is_superuser')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -15,7 +15,7 @@ class UserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login',)}),  # Adjusted to include only existing fields
     )
-    
+
     # Define the fields to be used in the add user form.
     add_fieldsets = (
         (None, {
