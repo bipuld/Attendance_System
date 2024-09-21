@@ -301,8 +301,8 @@ class ReportGenerate(View):
             attendance_records = class_data.attendance_set.all()
         serializer_data=AttendanceSerializer(attendance_records, many=True).data
 
-        present_count = attendance_records.filter(status='Present').count()
-        absent_count = attendance_records.filter(status='Absent').count()
+        present_count = attendance_records.filter(status='present').count()
+        absent_count = attendance_records.filter(status='absent').count()
         # print(serializer_data,"The JSON data")
         context = {
             'class': class_data,
@@ -343,8 +343,8 @@ class WeeklyReport(LoginRequiredMixin, View):
             class_instance=selected_class,
             date__range=[start_date, end_date]
         )
-        present_count = attendance_records.filter(status='Present').count()
-        absent_count = attendance_records.filter(status='Absent').count()
+        present_count = attendance_records.filter(status='present').count()
+        absent_count = attendance_records.filter(status='absent').count()
         print(attendance_records, "The attendance records are weekly")
         return attendance_records, present_count, absent_count
 
@@ -383,8 +383,8 @@ class MonthlyReport(LoginRequiredMixin, View):
             class_instance=selected_class,
             date__range=[start_date, end_date]
         )
-        present_count = attendance_records.filter(status='Present').count()
-        absent_count = attendance_records.filter(status='Absent').count()
+        present_count = attendance_records.filter(status='present').count()
+        absent_count = attendance_records.filter(status='absent').count()
 
         return attendance_records, present_count, absent_count
 
