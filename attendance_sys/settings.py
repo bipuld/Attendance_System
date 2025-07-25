@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from django.contrib.messages import constants as message_constants
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files in production
 ]
 
 ROOT_URLCONF = 'attendance_sys.urls'
@@ -77,20 +79,17 @@ WSGI_APPLICATION = 'attendance_sys.wsgi.application'
 
 
 DATABASES = {
-'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
-
-    # 'default': {
-    # 'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'att_system',
-    #     'USER': 'root',
-    #     'PASSWORD': '',
-    #     'HOST':'localhost',
-    #     'PORT':'3306'
-    # }
 }
+
+
 
 
 # Password validation
@@ -159,6 +158,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production, when you run 'collects
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # Create a 'static' folder in your project directory
 ]
+# Whitenoise settings for serving static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # media file settings
