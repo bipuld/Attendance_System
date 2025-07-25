@@ -181,39 +181,5 @@ MESSAGE_TAGS = {
 # Default message storage
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
-# This logging setting will create a debug.log file in the root directory of the project.
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'timestamp': {
-            'format': '{asctime} {levelname} {message} {lineno} ',
-            'style': '{',
-
-        },
-
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-            'formatter': 'timestamp'
-        },
-
-
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-
-    },
-}
-
-
 LOGIN_URL = 'auth/login/'
 LOGIN_REDIRECT_URL = 'home'
